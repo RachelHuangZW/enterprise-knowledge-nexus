@@ -10,8 +10,15 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
-# Business Logic Layer
-# Get a Query, reach out to DB, call tools, generate answer
+"""
+Core Agent Module
+-----------------
+This module serves as the Business Logic Layer.
+It orchestrates the autonomous SQL Agent workflow using LangGraph, managing:
+1. State transitions (User -> Agent -> Tools -> Agent).
+2. Tool execution (SQLToolkit for database querying).
+3. LLM reasoning to transform natural language into database insights.
+"""
 
 load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
