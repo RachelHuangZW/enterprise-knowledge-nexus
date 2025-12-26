@@ -19,7 +19,7 @@ app = FastAPI(
 # The structure of the data sent BY the user
 class ChatRequest(BaseModel):
     query: str
-    thread_id: str = "default_thread" # Used for conversation memory
+    thread_id: str = "default_thread"  # Used for conversation memory
 
 # The structure of the data sent BACK to the user
 class ChatResponse(BaseModel):
@@ -28,7 +28,7 @@ class ChatResponse(BaseModel):
 # ---------------------------------------------------------
 # 3. Initialize the Agent
 # ---------------------------------------------------------
-# We load the agent graph once when the server starts to avoid overhead per request
+# Load the agent graph once during server startup to minimize per-request overhead
 print("🤖 Loading Agent Graph...")
 agent_graph = get_sql_agent_graph()
 print("✅ Agent Graph loaded.")
@@ -43,21 +43,21 @@ async def chat_endpoint(request: ChatRequest):
     """
     try:
         # 1. Construct the input for LangGraph
-        # 我们把用户发来的 request.query 包装成 LangGraph 需要的消息格式
-        # 格式: {"messages": [("user", "用户的具体问题")]}
+        # Wrap the user's query into the message format expected by LangGraph
+        # Format: {"messages": [("user", "User's specific query")]}
         inputs = {"messages": [("user", request.query)]}
         
         # 2. Construct the configuration
-        # 我们把用户发来的 request.thread_id 传给 MemorySaver
+        # Pass the request's thread_id to MemorySaver for session persistence
         config = {"configurable": {"thread_id": request.thread_id}}
         
         # 3. Invoke the Agent
-        # 把刚才打包好的 inputs 和 config 扔给大脑
+        # Pass the prepared inputs and configuration to the agent (the 'brain')
         result = agent_graph.invoke(inputs, config)
         
         # 4. Extract the final AI response
-        # result["messages"] 是一个列表，[-1] 表示取最后一条（也就是 AI 的回复）
-        # .content 表示取里面的文字内容
+        # result["messages"] is a list; [-1] retrieves the last message (the AI's response)
+        # .content retrieves the actual text content of that message
         final_content = result["messages"][-1].content
         
         # Return the result
@@ -74,4 +74,3 @@ async def chat_endpoint(request: ChatRequest):
 if __name__ == "__main__":
     # This allows you to run the server via: python -m backend.server
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
