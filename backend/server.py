@@ -36,6 +36,7 @@ print("✅ Agent Graph loaded.")
 # ---------------------------------------------------------
 # 4. Define API Endpoints
 # ---------------------------------------------------------
+@app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     """
     Main endpoint: Receives a user query, runs the Agent, and returns the response.
